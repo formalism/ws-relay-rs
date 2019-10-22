@@ -1,10 +1,10 @@
-* ws-relay-rs
+# ws-relay-rs
 
 This program simply relays data between WebSocket and TCP servers. Data received from WebSocket clients
 is forwarded to the specified TCP server, and vice-versa. It resembles [ws-tcp-relay](https://github.com/isobit/ws-tcp-relay)
 albeit this program is written in Rust language and without TLS support.
 
-* Usage
+## Usage
 
 <pre>
 Usage: ws-relay-rs <options>
@@ -18,7 +18,7 @@ which generates sample image data.
 index.html is a sample HTML file which connects to this program, then transfer
 image data via WebSocket.
 
-* Build
+## Build
 
 <pre>
 cargo build --release
