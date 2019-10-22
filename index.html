@@ -1,0 +1,57 @@
+<html>
+    <head>
+        <script>
+            var f = 0;
+            var conn;
+            var start, end;
+
+            function go(){
+                var buf = new ArrayBuffer(1);
+                var ar = new Int8Array(buf);
+                ar[0] = f;
+                conn.send(ar);
+                f++;
+            }
+
+            function start(){
+                var port = document.getElementById('port').value;
+                conn = new WebSocket("ws://127.0.0.1:"+port+"/");
+                conn.binaryType = 'arraybuffer';
+                var pos = 0;
+                var canvas = document.getElementById('canvas');
+                var ctx = canvas.getContext('2d');
+                var imageData = ctx.createImageData(640, 480);
+                var img = imageData.data;
+
+                conn.onmessage = function(e){
+                    var buf = new Uint8Array(e.data);
+                    for (var i = 0; i < e.data.byteLength; i++){
+                        img[pos+i*4+0] = buf[i];
+                        img[pos+i*4+1] = buf[i];
+                        img[pos+i*4+2] = buf[i];
+                        img[pos+i*4+3] = 255;
+                    }
+                    pos += e.data.byteLength*4;
+                    if (pos >= 640*480*4){
+                        ctx.putImageData(imageData, 0, 0);
+                        end = performance.now();
+                        pos = 0;
+                        const elapsed = end - start;
+                        start = performance.now();
+                        go();
+                        document.getElementById('time').innerHTML = elapsed.toPrecision(3) + "[ms]";
+                    }
+                }
+                conn.onopen = function(e){
+                    go();
+                }
+            }
+        </script>
+    </head>
+<body>
+    <input type="button" onClick="start()" value="Start"></input>
+    <div id="time"></div>
+    Server port: <input type="text" value="3333" id="port"></input>
+    <canvas id="canvas" width="640" height="480"></canvas>
+</body>
+</html>
